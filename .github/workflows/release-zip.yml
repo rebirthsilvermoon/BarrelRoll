@@ -1,0 +1,38 @@
+name: Create Release and Zip
+
+on:
+  create:
+    branches:
+      - release/**
+
+jobs:
+  create-release-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get branch name and version
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          VERSION=${BRANCH_NAME##release/}
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Create zip file
+        run: |
+          zip -r "barrelroll_${{ env.VERSION }}.zip" . \
+            -x '*.git*' \
+            -x '*.github*' \
+            -x '.gitignore' \
+            -x 'workflow-templates/**' \
+            -x '.vscode/**' \
+            -x '.DS_Store' \
+            -x 'node_modules/**' \
+            -x 'tests/**'
+
+      - name: Create GitHub release and upload asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ env.VERSION }} "barrelroll_${{ env.VERSION }}.zip" --title "${{ env.VERSION }}"
