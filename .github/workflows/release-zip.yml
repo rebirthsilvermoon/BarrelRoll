@@ -21,11 +21,10 @@ jobs:
 
       - name: Create zip file
         run: |
-          zip -r "barrelroll_${{ env.VERSION }}.zip" . \
+          zip -r "barrelroll_${{ env.VERSION }}.zip" BarrelRoll \
             -x '*.git*' \
             -x '*.github*' \
             -x '.gitignore' \
-            -x 'workflow-templates/**' \
             -x '.vscode/**' \
             -x '.DS_Store' \
             -x 'node_modules/**' \
